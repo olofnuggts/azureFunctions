@@ -28,7 +28,7 @@ import java.time.format.DateTimeFormatter;
  */
 public class Function {
         /**
-         * This function listens at endpoint "/api/cosmosdb".
+         * This function listens at endpoint "/api/getlastdata".
          */
         @FunctionName("getlastdata")
         public HttpResponseMessage run(
