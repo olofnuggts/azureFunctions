@@ -1,6 +1,7 @@
 package com.function;
 
 import com.azure.core.credential.AzureKeyCredential;
+import com.azure.core.http.HttpHeaders;
 import com.azure.core.implementation.util.EnvironmentConfiguration;
 import com.azure.cosmos.*;
 import com.azure.cosmos.models.CosmosQueryRequestOptions;
@@ -33,9 +34,23 @@ public class Function {
         @FunctionName("getlastdata")
         public HttpResponseMessage run(
                         @HttpTrigger(name = "req", methods = {
-                                        HttpMethod.GET }, authLevel = AuthorizationLevel.ANONYMOUS) HttpRequestMessage<Optional<String>> request,
+                                        HttpMethod.GET }, authLevel = AuthorizationLevel.FUNCTION) HttpRequestMessage<Optional<String>> request,
                         final ExecutionContext context) {
+                Map<String, String> headers =  request.getQueryParameters();
 
+
+                String apiKey = headers.get("code");
+
+                 if (apiKey == null) {
+                return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body("API key is missing").build();
+                 }
+
+                String functionKey = System.getenv("API_KEY");
+
+                if (!apiKey.equals(functionKey)) {
+
+                return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body("Invalid API key").build();
+                }
                 LocalDate today = LocalDate.now();
                 LocalDateTime midnight = LocalDateTime.of(today, LocalTime.MIDNIGHT);
                 DateTimeFormatter formatter = new DateTimeFormatterBuilder()
